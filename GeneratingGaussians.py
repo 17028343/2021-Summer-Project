@@ -48,16 +48,17 @@ Standard_Deviation = np.random.uniform(low=0.0, high=5.0, size=Training_Set_Size
 # Python uses vectorised operations, i.e. arrays can multiply arrays of numbers - no need for for loops
 # Although, as X_Values has shape (16,) and e.g. Peak Height has shape (10000,) these cannot be multiplied
 # A bit of broadcasting magic has to happen (https://numpy.org/doc/stable/user/theory.broadcasting.html#array-broadcasting-in-numpy)
-Y_Values = Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2*Standard_Deviation**2))+np.random.randn()*0.3
-Generated_Data = Y_Values
+Y_Values = Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2*Standard_Deviation**2))
+noise = np.random.randn(len(X_Values, Training_Set_Size))*0.3
+Generated_Data = Y_Values+noise
 
 # For some reason, it seems to be overwriting all previously generated data when the
 # code is run, meaning that once the final gaussian is generated and the Y_values saved, 
 # all of the data is equivalent to those final Y_values rather than maintaining the 
 # 10000 different gaussians
-Generated_Data
+#Generated_Data
 
-plt.scatter(X_Values, Y_Values, s=20, edgecolors=("k"))
+plt.scatter(X_Values, Generated_Data[:,0], s=20, edgecolors=("k"))
 
 
 # The true parameters for each gaussian, i.e. the target values for the later network. 
