@@ -20,30 +20,36 @@ plot = plt.scatter(X_Values, Y_Values, s=20, edgecolors=("k"))
 # First initialise X and preallocate Y to be filled once parameters are set
 # Taking X values between 0 and 15 to begin with
 
-X_Values = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+X_Values = np.arange(0, 16, 1) # generates sequence of numbers between 0 and 16
 Y_Values = np.zeros(np.size(X_Values), dtype='float32')
 n = np.size(X_Values)
 
 # Preallocating arrays to save the parameters for each runthrough
 Training_Set_Size = 10000
-Generated_Data = np.zeros(Training_Set_Size, dtype=object)
-Shift = np.zeros(Training_Set_Size, dtype='float32')
-Peak_Height = np.zeros(Training_Set_Size, dtype='float32')
-Standard_Deviation = np.zeros(Training_Set_Size, dtype='float32')
+
+# NO NEED TO PRE GENERATE ARRAYS ANYMORE
+#Generated_Data = np.zeros(Training_Set_Size, dtype=object)
+#Shift = np.zeros(Training_Set_Size, dtype='float32')
+#Peak_Height = np.zeros(Training_Set_Size, dtype='float32')
+#Standard_Deviation = np.zeros(Training_Set_Size, dtype='float32')
 
 # Attempting to generate 10000 gaussian curves
-for i in range(Training_Set_Size):
+#for i in range(Training_Set_Size):
     # Generating Random values for Shift, Height and Width, saving them in the
     # preallocated arrays Shift=[0 15], Height=[0 5], Deviation=[0 5]
-    Shift[i] = np.random.uniform(low=0.0, high=15.0)
-    Peak_Height[i] = np.random.uniform(low=0.0, high=5.0)
-    Standard_Deviation[i] = np.random.uniform(low=0.0, high=5.0)
-    for j in range(n):
+Shift = np.random.uniform(low=0.0, high=15.0, size=Training_Set_Size) # adding size generates 10,000 values in one go
+Peak_Height = np.random.uniform(low=0.0, high=5.0, size=Training_Set_Size)
+Standard_Deviation = np.random.uniform(low=0.0, high=5.0, size=Training_Set_Size)
+#    for j in range(n):
      # calculating the Y values of the randomly generated gaussian distributions
      # j refers to each element of the array thus only refers to the X and Y values,
      # i is referring to the above generated random parameters.
-     Y_Values[j]=Peak_Height[i]*np.exp(-(X_Values[j]-Shift[i])**2/(2*Standard_Deviation[i]**2))+np.random.randn()*0.3
-     Generated_Data[i]=Y_Values
+
+# Python uses vectorised operations, i.e. arrays can multiply arrays of numbers - no need for for loops
+# Although, as X_Values has shape (16,) and e.g. Peak Height has shape (10000,) these cannot be multiplied
+# A bit of broadcasting magic has to happen (https://numpy.org/doc/stable/user/theory.broadcasting.html#array-broadcasting-in-numpy)
+Y_Values = Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2*Standard_Deviation**2))+np.random.randn()*0.3
+Generated_Data = Y_Values
 
 # For some reason, it seems to be overwriting all previously generated data when the
 # code is run, meaning that once the final gaussian is generated and the Y_values saved, 
