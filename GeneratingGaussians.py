@@ -48,7 +48,7 @@ Standard_Deviation = np.random.uniform(low=0.0, high=5.0, size=Training_Set_Size
 # Python uses vectorised operations, i.e. arrays can multiply arrays of numbers - no need for for loops
 # Although, as X_Values has shape (16,) and e.g. Peak Height has shape (10000,) these cannot be multiplied
 # A bit of broadcasting magic has to happen (https://numpy.org/doc/stable/user/theory.broadcasting.html#array-broadcasting-in-numpy)
-Y_Values = Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2*Standard_Deviation**2))+np.random.randn()*0.3
+Y_Values = Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2*Standard_Deviation**2))+np.random.randn(size=(len(X_Values),Training_set_size))*0.3
 Generated_Data = Y_Values
 
 # For some reason, it seems to be overwriting all previously generated data when the
