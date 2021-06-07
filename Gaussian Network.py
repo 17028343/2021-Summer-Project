@@ -23,16 +23,16 @@ Generated_Data = Y_Values
 True_Parameters=np.c_[Shift, Peak_Height, Standard_Deviation]
 
 
-# Creating the dense network
+# Creating the dense network - Early Stopping and Batch Normalization
 earlystop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
 GaussianNet = tf.keras.models.Sequential([
-  tf.keras.layers.Dense(16, activation='sigmoid', kernel_regularizer=regularizers.l2(0.000001)),
+  tf.keras.layers.Dense(16, activation='sigmoid', kernel_regularizer=regularizers.l2(0.0000001)),
   tf.keras.layers.BatchNormalization(axis=-1, momentum=0.99),
-  tf.keras.layers.Dense(64, activation='sigmoid', kernel_regularizer=regularizers.l2(0.000001)),
+  tf.keras.layers.Dense(64, activation='sigmoid', kernel_regularizer=regularizers.l2(0.0000001)),
   tf.keras.layers.BatchNormalization(axis=-1, momentum=0.99),
-  tf.keras.layers.Dense(10, activation='sigmoid', kernel_regularizer=regularizers.l2(0.000001)),
+  tf.keras.layers.Dense(10, activation='sigmoid', kernel_regularizer=regularizers.l2(0.0000001)),
   tf.keras.layers.BatchNormalization(axis=-1, momentum=0.99),
-  tf.keras.layers.Dense(3, activation='linear', kernel_regularizer=regularizers.l2(0.000001))
+  tf.keras.layers.Dense(3, activation='linear', kernel_regularizer=regularizers.l2(0.0000001))
 ])
 
 GaussianNet.compile(optimizer='adam', loss='mean_squared_error', metrics=['accuracy'])
