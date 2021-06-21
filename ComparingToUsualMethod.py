@@ -100,6 +100,13 @@ for i in np.arange(0,Validation_Set_Size,1):
     Counter+=1
 
 TraditionalPredictions=np.array(TraditionalPredictions,dtype="float64")
+TraditionalPredictions=TraditionalPredictions[:, [1, 0, 2]]
+TraditionalShift=TraditionalPredictions[:,0]
+TraditionalHeight=TraditionalPredictions[:,1]
+TraditionalWidth=TraditionalPredictions[:,2]
+
+
+
 
 TradErrors=TraditionalPredictions-Validation_Parameters
 TraditionalPercentage_Errors=100*(TradErrors)/Validation_Parameters
@@ -113,12 +120,12 @@ NetShiftErrs=Net_Errors[:,0]
 NetHeightErrs=Net_Errors[:,1]
 NetStanDevErrs=Net_Errors[:,2]
 
-TradShiftErrs=TradErrors[:,1]
-TradHeightErrs=TradErrors[:,0]
+TradShiftErrs=TradErrors[:,0]
+TradHeightErrs=TradErrors[:,1]
 TradStanDevErrs=TradErrors[:,2]
 
 plt.scatter(NETWORKPredictions[:,0], Val_Shift, c='c', edgecolors="k", linewidths=0.2)
-plt.scatter(TraditionalPredictions[:,1], Val_Shift, c='b', edgecolors="k", linewidths=0.2)
+plt.scatter(TraditionalShift, Val_Shift, c='b', edgecolors="k", linewidths=0.2)
 plt.xlim(0,25)
 plt.xlabel('Predicted Shift Values')
 plt.ylabel('True Shift Values')
@@ -126,7 +133,7 @@ plt.legend(['Network Predictions', 'Traditional Predictions'], loc='right')
 plt.show()
 
 plt.scatter(NETWORKPredictions[:,1], Val_Peak_Height, c='r', edgecolors="k", linewidths=0.2)
-plt.scatter(TraditionalPredictions[:,0], Val_Peak_Height, c='maroon', edgecolors="k", linewidths=0.2)
+plt.scatter(TraditionalHeight, Val_Peak_Height, c='maroon', edgecolors="k", linewidths=0.2)
 plt.xlim(0,10)
 plt.xlabel('Predicted Height Values')
 plt.ylabel('True Height Values')
@@ -135,7 +142,7 @@ plt.plot([0,5], [0,5])
 plt.show()
 
 plt.scatter(NETWORKPredictions[:,2], Val_Standard_Deviation, c='lime', edgecolors="k", linewidths=0.2)
-plt.scatter(TraditionalPredictions[:,2], Val_Standard_Deviation, c='green', edgecolors="k", linewidths=0.2)
+plt.scatter(TraditionalWidth, Val_Standard_Deviation, c='green', edgecolors="k", linewidths=0.2)
 plt.xlim(0,10)
 plt.xlabel('Predicted SD Values')
 plt.ylabel('True SD Values')
@@ -156,45 +163,46 @@ sns.kdeplot(TradShiftErrs, color="b")
 plt.xlabel('Error in Shift Prediction')
 plt.ylim(0,1.0)
 plt.legend(['Network Errors', 'Traditional Errors'], loc='upper right')
-plt.annotate('Traditional Method Mean Error', (-19, 0.95))
-plt.annotate(f'{TradShiftErrAve}', (-17, 0.88))
-plt.annotate('Network Mean Error', (-16.5, 0.78))
-plt.annotate(f'{NetShiftErrAve}', (-17, 0.71))
+plt.annotate('Traditional Method Mean Error', (-15, 0.95))
+plt.annotate(f'{TradShiftErrAve}', (-13, 0.88))
+plt.annotate('Network Mean Error', (-12.8, 0.78))
+plt.annotate(f'{NetShiftErrAve}', (-14, 0.71))
 plt.show()
 
 sns.kdeplot(NetHeightErrs, color="r")
 sns.kdeplot(TradHeightErrs, color="maroon")
 plt.xlabel('Error in Height Prediction')
-plt.ylim(0,1.0)
 plt.legend(['Network Errors', 'Traditional Errors'], loc='upper right')
-plt.annotate('Traditional Method Mean Error', (-6.7, 0.95))
-plt.annotate(f'{TradHeightErrAve}', (-6, 0.88))
-plt.annotate('Network Mean Error', (-5.5, 0.78))
-plt.annotate(f'{NetHeightErrAve}', (-6, 0.71))
+plt.annotate('Traditional Method Mean Error', (-5.5, 0.95))
+plt.annotate(f'{TradHeightErrAve}', (-5, 0.88))
+plt.annotate('Network Mean Error', (-4.5, 0.78))
+plt.annotate(f'{NetHeightErrAve}', (-5, 0.71))
 plt.show()
 
 sns.kdeplot(NetStanDevErrs, color="lime")
 sns.kdeplot(TradStanDevErrs, color="green")
 plt.xlabel('Error in StanDev Prediction')
-plt.ylim(0,1.0)
 plt.legend(['Network Errors', 'Traditional Errors'], loc='upper right')
-plt.annotate('Traditional Method Mean Error', (-6, 0.95))
-plt.annotate(f'{TradStanDevErrAve}', (-5.7, 0.88))
-plt.annotate('Network Mean Error', (-5.5, 0.78))
-plt.annotate(f'{NetStanDevErrAve}', (-6, 0.71))
+plt.annotate('Traditional Method Mean Error', (-5.7, 0.95))
+plt.annotate(f'{TradStanDevErrAve}', (-5.5, 0.88))
+plt.annotate('Network Mean Error', (-5.0, 0.78))
+plt.annotate(f'{NetStanDevErrAve}', (-5.5, 0.71))
 plt.show()
 
 
 Liner=np.linspace(0,15,1000)
-GaussianNumber=566
+GaussianNumber=109
 plt.scatter(X_Values, Validation_Y_Values[:,GaussianNumber], marker='o', c='lime', ec='k', lw=0.5, zorder=3)
 plt.plot(Liner, 
             NETWORKPredictions[GaussianNumber,1] * np.exp(-(Liner-NETWORKPredictions[GaussianNumber,0])*(Liner-NETWORKPredictions[GaussianNumber,0])/(2*NETWORKPredictions[GaussianNumber,2]*NETWORKPredictions[GaussianNumber,2])),
             c='b', zorder=1)
 plt.plot(Liner, 
-            TraditionalPredictions[GaussianNumber,1] * np.exp(-(Liner-TraditionalPredictions[GaussianNumber,0])*(Liner-TraditionalPredictions[GaussianNumber,0])/(2*TraditionalPredictions[GaussianNumber,2]*TraditionalPredictions[GaussianNumber,2])),
+            TraditionalHeight[GaussianNumber] * np.exp(-(Liner-TraditionalShift[GaussianNumber])*(Liner-TraditionalShift[GaussianNumber])/(2*TraditionalWidth[GaussianNumber]*TraditionalWidth[GaussianNumber])),
             c='r', zorder=2)
-plt.legend(['Network Predictions', 'Traditional Predictions', 'True Values'])
+plt.plot(Liner, 
+            Val_Peak_Height[GaussianNumber] * np.exp(-(Liner-Val_Shift[GaussianNumber])*(Liner-Val_Shift[GaussianNumber])/(2*Val_Standard_Deviation[GaussianNumber]*Val_Standard_Deviation[GaussianNumber])), 
+            c='green', zorder=0)
+plt.legend(['True function', 'Network Predictions', 'Traditional Predictions', 'True Values'])
 plt.show()
 
 
