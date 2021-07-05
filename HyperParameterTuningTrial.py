@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from keras.wrappers.scikit_learn import KerasClassifier
+from keras.wrappers.scikit_learn import KerasRegressor
 from sklearn.model_selection import ParameterGrid
 from sklearn.model_selection import GridSearchCV
 
@@ -31,11 +31,14 @@ x_train = np.transpose(Peak_Height*np.exp(-(X_Values[np.newaxis,].T-Shift)**2/(2
 y_train=np.c_[Shift, Peak_Height, Standard_Deviation]
 
 
-def create_model(layers, activation):
+# I changed the model definition slightly, you were using x_train inside the function,
+# but not passing it in. This can have odd behaviour. So I have explicitly specified the
+# value instead. RM
+def create_model(layers, activation, input_shape=16):
     model = Sequential()
     for i, nodes in enumerate(layers):
         if i==0:
-            model.add(Dense(nodes,input_dim=x_train.shape[1]))
+            model.add(Dense(nodes,input_dim=input_shape))
             model.add(Activation(activation))
             model.add(Dropout(0.05))
         else:
@@ -48,18 +51,23 @@ def create_model(layers, activation):
     model.compile(optimizer='adam', loss='mean_squared_error',metrics=['accuracy'])
     return model
 
-
-model = KerasClassifier(build_fn=create_model, verbose=0)
+# changed this from classifier to regressor
+model = KerasRegressor(build_fn=create_model, verbose=0)
 
 layers = [[50], [64, 10]]
 activations = ['sigmoid', 'relu']
-param_grid = dict(layers=layers, activation=activations, batch_size = [32], epochs=[100])
+# removed parameters from here, as you are not searching over epochs and batch size
+# It could be that this was causing the problem, with grid search function expecting to find
+# corresponding arguments in the model defintion. RM
+param_grid = dict(layers=layers, activation=activations)
 
 
 grid = GridSearchCV(estimator=model, param_grid=param_grid,cv=5)
 
 earlystop = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=10)
-grid_result = grid.fit(x_train, y_train, callbacks=earlystop)
+
+# added epochs here RM
+grid_result = grid.fit(x_train, y_train, epochs=100, callbacks=earlystop)
 
 # Getting this error after running the code for 10-ish minutes. Not sure how to fix
 # Cannot clone object <tensorflow.python.keras.wrappers.scikit_learn.KerasClassifier object at 0x0000016D454847F0>, as the constructor either does not set or modifies parameter layers
